@@ -69,7 +69,7 @@ public class C500Helper {
     // MUSIC mode domain
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_MUSIC = "music";
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_MUSIC_ACTION = "action";
-    public static final String ACTION_RECOGNIZE_CMD_DOMAIN_MUSIC_ACTION_OPEN = "action";
+    public static final String ACTION_RECOGNIZE_CMD_DOMAIN_MUSIC_ACTION_OPEN = "open";
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_MUSIC_ACTION_RANDOM = "random";
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_MUSIC_ACTION_NEXT = "next";
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_MUSIC_ACTION_PREV = "prev";
@@ -84,7 +84,7 @@ public class C500Helper {
 
     // Volume control domain
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_VOLUME = "volume";
-    public static final String ACTION_RECOGNIZE_CMD_DOMAIN_VOLUME_ACTION = "volume";
+    public static final String ACTION_RECOGNIZE_CMD_DOMAIN_VOLUME_ACTION = "action";
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_VOLUME_ACTION_UP = "up";
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_VOLUME_ACTION_DOWN = "down";
     public static final String ACTION_RECOGNIZE_CMD_DOMAIN_VOLUME_ACTION_MAX = "max";
