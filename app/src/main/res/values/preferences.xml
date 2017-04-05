@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+    /* C500Companion - An open source, free addition for Ownice C500 head unit
+    * Copyright (C) 2017 Maksim M. Levin. Russia, Voronezh
+    *
+    * This program is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    *
+    * Contacts:
+    *            email: mmlevin@mail.ru
+    */
+ -->
+
+<resources>
+    <string name="prefPowerAmpUseTitle">Use PowerAMP instead of build-in</string>
+    <string name="prefPowerAmpUseSummary">Replace standard player with PowerAMP when switch mode</string>
+    <string name="prefPowerAmpUse" translatable="false">prefPowerAMPUse</string>
+    <bool name="prefPowerAmpUseDefault">true</bool>
+
+    <string name="prefPowerAmpUseApiTitle">Use PowerAMP API instead of Media keys</string>
+    <string name="prefPowerAmpUseApi" translatable="false">prefPowerAMPAPI</string>
+    <bool name="prefPowerAmpUseApiDefault">true</bool>
+
+    <string name="prefPowerAmpPauseOnSleepTitle">Send Pause event on enter sleep mode</string>
+    <string name="prefPowerAmpPauseOnSleep" translatable="false">prefPauseOnSleep</string>
+    <bool name="prefPowerAmpPauseOnSleepDefault">true</bool>
+
+    <string name="prefPowerAmpPlayOnWakeupTitle">Send Play event on wake up</string>
+    <string name="prefPowerAmpPlayOnWakeup" translatable="false">prefPlayOnWakeup</string>
+    <bool name="prefPowerAmpPlayOnWakeupDefault">true</bool>
+
+    <string name="prefPowerAmpSwitchWithSeekTitle">Switch tracks with seek wheel</string>
+    <string name="prefPowerAmpSwitchWithSeek" translatable="false">prefSwitchWithSeek</string>
+    <bool name="prefPowerAmpSwitchWithSeekDefault">true</bool>
+</resources>

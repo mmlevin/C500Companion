@@ -1,0 +1,46 @@
+<!--
+
+    /* C500Companion - An open source, free addition for Ownice C500 head unit
+    * Copyright (C) 2017 Maksim M. Levin. Russia, Voronezh
+    *
+    * This program is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    *
+    * Contacts:
+    *            email: mmlevin@mail.ru
+    */
+ -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="@bool/prefPowerAmpUseDefault"
+        android:key="@string/prefPowerAmpUse"
+        android:title="@string/prefPowerAmpUseTitle"
+        android:summary="@string/prefPowerAmpUseSummary"/>
+    <CheckBoxPreference
+        android:defaultValue="@bool/prefPowerAmpUseApiDefault"
+        android:key="@string/prefPowerAmpUseApi"
+        android:title="@string/prefPowerAmpUseApiTitle" />
+    <CheckBoxPreference
+        android:defaultValue="@bool/prefPowerAmpPauseOnSleepDefault"
+        android:key="@string/prefPowerAmpPauseOnSleep"
+        android:title="@string/prefPowerAmpPauseOnSleepTitle" />
+    <CheckBoxPreference
+        android:defaultValue="@bool/prefPowerAmpPlayOnWakeupDefault"
+        android:key="@string/prefPowerAmpPlayOnWakeup"
+        android:title="@string/prefPowerAmpPlayOnWakeupTitle" />
+    <CheckBoxPreference
+        android:defaultValue="@bool/prefPowerAmpSwitchWithSeekDefault"
+        android:key="@string/prefPowerAmpSwitchWithSeek"
+        android:title="@string/prefPowerAmpSwitchWithSeekTitle" />
+</PreferenceScreen>
