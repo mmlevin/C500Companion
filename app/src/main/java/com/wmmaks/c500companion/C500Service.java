@@ -56,16 +56,6 @@ public class C500Service extends IntentService {
     public static final int POWERAMP_API_COMMAND_NEXT = 4;
     public static final int POWERAMP_API_COMMAND_PREVIOUS = 5;
 
-    public static final String C500_BROADCAST_ACTION_COMMAND = "com.globalconstant.BROADCAST_SEND_CMD";
-    public static final String C500_COMMAND_DOMAIN = "domain";
-    public static final String C500_COMMAND_DOMAIN_DEVICE = "device";
-    public static final String C500_EXTRA_DEVICE_NAME = "device_name";
-    public static final String C500_EXTRA_ACTION = "action";
-    public static final String C500_EXTRA_ACTION_OPEN = "open";
-    public static final String C500_EXTRA_DEVICE_NAME_MUSIC = "music";
-    public static final String C500_EXTRA_DEVICE_NAME_RADIO = "radio";
-    public static final String C500_EXTRA_DEVICE_NAME_AVIN = "avin";
-
     private SharedPreferences settings;
     private int mMode;
     private C500Helper.C500_MODES mModes [] = {
@@ -131,6 +121,7 @@ public class C500Service extends IntentService {
                 boolean pauseOnSleep = sharedPref.getBoolean(getString(R.string.prefPowerAmpPauseOnSleep),getResources().getBoolean(R.bool.prefPowerAmpPauseOnSleepDefault));
                 boolean playOnWakeup = sharedPref.getBoolean(getString(R.string.prefPowerAmpPlayOnWakeup),getResources().getBoolean(R.bool.prefPowerAmpPlayOnWakeupDefault));
                 boolean switchWithSeek = sharedPref.getBoolean(getString(R.string.prefPowerAmpSwitchWithSeek),getResources().getBoolean(R.bool.prefPowerAmpSwitchWithSeekDefault));
+                boolean launchDirect = sharedPref.getBoolean(getString(R.string.prefPowerAmpLaunchDirect),getResources().getBoolean(R.bool.prefPowerAmpLaunchDirectDefault));
 
                 switch (param) {
                     case CMD_MODE_ENTER_SLEEP:
@@ -149,7 +140,7 @@ public class C500Service extends IntentService {
                     case CMD_MODE_RESTORE_SLEEP:
                         Log.d(LOG_TAG,"Received RESTORE_SLEEP");
                         if (mModes[mMode] == C500Helper.C500_MODES.C500_MUSIC) {
-                            SetMode(mModes[mMode], usePowerAmp);
+                            SetMode(mModes[mMode], usePowerAmp,launchDirect);
                             if (playOnWakeup) {
                                 if (usePowerAmp && usePowerAmpAPI) {
                                     intent = new Intent(POWERAMP_API_COMMAND);
@@ -165,7 +156,7 @@ public class C500Service extends IntentService {
                     case CMD_MODE_CHANGE:
                         Log.d(LOG_TAG,"Received mode change");
                         if (++mMode >= mModes.length) {mMode = 0;}
-                        SetMode(mModes[mMode],usePowerAmp);
+                        SetMode(mModes[mMode],usePowerAmp,launchDirect);
                         break;
                     case CMD_MODE_SEEK_DOWN:
                         Log.d(LOG_TAG,"Received SEEK_DOWN");
@@ -201,33 +192,41 @@ public class C500Service extends IntentService {
         }
     }
 
-    private void SetMode(C500Helper.C500_MODES mode, boolean usePowerAmp) {
+    private void SetMode(C500Helper.C500_MODES mode, boolean usePowerAmp, boolean launchDirect) {
         Log.d(LOG_TAG,"Switching to " + mode.name());
         Intent intent;
         switch (mode) {
             case C500_MUSIC:
                 if (usePowerAmp) {
-                    openApplication(this, POWERAMP_PACKAGE_NAME);
+                    if (launchDirect) {
+                        openApplication(this, POWERAMP_PACKAGE_NAME);
+                    } else {
+                        intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                        intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_APP);
+                        intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_APP_EXTRA_PACKAGE, POWERAMP_PACKAGE_NAME);
+                        intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_APP_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_APP_ACTION_OPEN);
+                        sendBroadcast(intent);
+                    }
                 } else {
-                    intent = new Intent (C500_BROADCAST_ACTION_COMMAND);
-                    intent.putExtra(C500_COMMAND_DOMAIN, C500_COMMAND_DOMAIN_DEVICE);
-                    intent.putExtra(C500_EXTRA_DEVICE_NAME, C500_EXTRA_DEVICE_NAME_MUSIC);
-                    intent.putExtra(C500_EXTRA_ACTION, C500_EXTRA_ACTION_OPEN);
+                    intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                    intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
+                    intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_MUSIC);
+                    intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
                     sendBroadcast(intent);
                 }
                 break;
             case C500_RADIO:
-                intent = new Intent (C500_BROADCAST_ACTION_COMMAND);
-                intent.putExtra(C500_COMMAND_DOMAIN, C500_COMMAND_DOMAIN_DEVICE);
-                intent.putExtra(C500_EXTRA_DEVICE_NAME, C500_EXTRA_DEVICE_NAME_RADIO);
-                intent.putExtra(C500_EXTRA_ACTION, C500_EXTRA_ACTION_OPEN);
+                intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_RADIO);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
                 sendBroadcast(intent);
                 break;
             case C500_AVIN:
-                intent = new Intent (C500_BROADCAST_ACTION_COMMAND);
-                intent.putExtra(C500_COMMAND_DOMAIN, C500_COMMAND_DOMAIN_DEVICE);
-                intent.putExtra(C500_EXTRA_DEVICE_NAME, C500_EXTRA_DEVICE_NAME_AVIN);
-                intent.putExtra(C500_EXTRA_ACTION, C500_EXTRA_ACTION_OPEN);
+                intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_AVIN);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
                 sendBroadcast(intent);
                 break;
         }

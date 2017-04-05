@@ -29,6 +29,10 @@
     <string name="prefPowerAmpUse" translatable="false">prefPowerAMPUse</string>
     <bool name="prefPowerAmpUseDefault">true</bool>
 
+    <string name="prefPowerAmpLaunchDirectTitle">Launch PowerAMP directly instead of C500 API</string>
+    <string name="prefPowerAmpLaunchDirect" translatable="false">prefPowerAMPLaunchDirect</string>
+    <bool name="prefPowerAmpLaunchDirectDefault">true</bool>
+
     <string name="prefPowerAmpUseApiTitle">Use PowerAMP API instead of Media keys</string>
     <string name="prefPowerAmpUseApi" translatable="false">prefPowerAMPAPI</string>
     <bool name="prefPowerAmpUseApiDefault">true</bool>

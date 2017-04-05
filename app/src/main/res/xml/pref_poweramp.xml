@@ -28,6 +28,10 @@
         android:title="@string/prefPowerAmpUseTitle"
         android:summary="@string/prefPowerAmpUseSummary"/>
     <CheckBoxPreference
+        android:defaultValue="@bool/prefPowerAmpLaunchDirectDefault"
+        android:key="@string/prefPowerAmpLaunchDirect"
+        android:title="@string/prefPowerAmpLaunchDirectTitle" />
+    <CheckBoxPreference
         android:defaultValue="@bool/prefPowerAmpUseApiDefault"
         android:key="@string/prefPowerAmpUseApi"
         android:title="@string/prefPowerAmpUseApiTitle" />
