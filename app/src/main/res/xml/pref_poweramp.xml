@@ -23,28 +23,28 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
-        android:defaultValue="@bool/prefPowerAmpUseDefault"
-        android:key="@string/prefPowerAmpUse"
         android:title="@string/prefPowerAmpUseTitle"
-        android:summary="@string/prefPowerAmpUseSummary"/>
+        android:summary="@string/prefPowerAmpUseSummary"
+        android:defaultValue="@bool/prefPowerAmpUseDefault"
+        android:key="@string/prefPowerAmpUse" />
     <CheckBoxPreference
-        android:defaultValue="@bool/prefPowerAmpLaunchDirectDefault"
+        android:title="@string/prefPowerAmpLaunchDirectTitle"
         android:key="@string/prefPowerAmpLaunchDirect"
-        android:title="@string/prefPowerAmpLaunchDirectTitle" />
+        android:defaultValue="@bool/prefPowerAmpLaunchDirectDefault" />
     <CheckBoxPreference
-        android:defaultValue="@bool/prefPowerAmpUseApiDefault"
+        android:title="@string/prefPowerAmpUseApiTitle"
         android:key="@string/prefPowerAmpUseApi"
-        android:title="@string/prefPowerAmpUseApiTitle" />
+        android:defaultValue="@bool/prefPowerAmpUseApiDefault" />
     <CheckBoxPreference
-        android:defaultValue="@bool/prefPowerAmpPauseOnSleepDefault"
+        android:title="@string/prefPowerAmpPauseOnSleepTitle"
         android:key="@string/prefPowerAmpPauseOnSleep"
-        android:title="@string/prefPowerAmpPauseOnSleepTitle" />
+        android:defaultValue="@bool/prefPowerAmpPauseOnSleepDefault" />
     <CheckBoxPreference
-        android:defaultValue="@bool/prefPowerAmpPlayOnWakeupDefault"
+        android:title="@string/prefPowerAmpPlayOnWakeupTitle"
         android:key="@string/prefPowerAmpPlayOnWakeup"
-        android:title="@string/prefPowerAmpPlayOnWakeupTitle" />
+        android:defaultValue="@bool/prefPowerAmpPlayOnWakeupDefault" />
     <CheckBoxPreference
-        android:defaultValue="@bool/prefPowerAmpSwitchWithSeekDefault"
+        android:title="@string/prefPowerAmpSwitchWithSeekTitle"
         android:key="@string/prefPowerAmpSwitchWithSeek"
-        android:title="@string/prefPowerAmpSwitchWithSeekTitle" />
+        android:defaultValue="@bool/prefPowerAmpSwitchWithSeekDefault" />
 </PreferenceScreen>

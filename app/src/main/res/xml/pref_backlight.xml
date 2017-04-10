@@ -21,8 +21,12 @@
     */
  -->
 
-<resources>
-    <string name="app_name">C500 Companion</string>
-    <string name="pref_header_poweramp">PowerAMP</string>
-    <string name="pref_header_backlight">Backlight</string>
-</resources>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:title="@string/prefBacklightUseTitle"
+        android:summary="@string/prefBacklightUseSummary"
+        android:key="@string/prefBacklightUse"
+        android:defaultValue="@bool/prefBacklightUseDefault" />
+    <com.wmmaks.c500companion.BacklightPreference
+        android:title="@string/prefBacklightLevelsTitle" />
+</PreferenceScreen>

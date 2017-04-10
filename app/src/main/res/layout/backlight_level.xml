@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+    /* C500Companion - An open source, free addition for Ownice C500 head unit
+    * Copyright (C) 2017 Maksim M. Levin. Russia, Voronezh
+    *
+    * This program is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    *
+    * Contacts:
+    *            email: mmlevin@mail.ru
+    */
+ -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewDawn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsDawnTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarDawn"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsDawnDefault" />
+
+            <TextView
+                android:id="@+id/textViewSunrise"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsSunriseTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarSunrise"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsSunriseDefault" />
+
+            <TextView
+                android:id="@+id/textViewSunriseEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsSunriseEndTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarSunriseEnd"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsSunriseEndDefault" />
+
+            <TextView
+                android:id="@+id/textViewDay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsDayTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarDay"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsDayDefault" />
+
+            <TextView
+                android:id="@+id/textViewSunset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsSunsetTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarSunset"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsSunsetDefault" />
+
+            <TextView
+                android:id="@+id/textViewSunsetEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsSunsetEndTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarSunsetEnd"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsSunsetEndDefault" />
+
+            <TextView
+                android:id="@+id/textViewDusk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsDuskTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarDusk"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsDuskDefault" />
+
+            <TextView
+                android:id="@+id/textViewNight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefBacklightLevelsNightTitle" />
+
+            <SeekBar
+                android:id="@+id/seekBarNight"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="@integer/prefBacklightLevels"
+                android:progress="@integer/prefBacklightLevelsNightDefault" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

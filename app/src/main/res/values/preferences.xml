@@ -48,4 +48,36 @@
     <string name="prefPowerAmpSwitchWithSeekTitle">Switch tracks with seek wheel</string>
     <string name="prefPowerAmpSwitchWithSeek" translatable="false">prefSwitchWithSeek</string>
     <bool name="prefPowerAmpSwitchWithSeekDefault">true</bool>
+
+    <string name="prefBacklightUseTitle">Automatic backlight control</string>
+    <string name="prefBacklightUseSummary">Control backlight level with day time</string>
+    <string name="prefBacklightUse" translatable="false">prefBacklightUse</string>
+    <bool name="prefBacklightUseDefault">true</bool>
+
+    <string name="prefBacklightLevelsTitle">Backlight levels</string>
+    <integer name="prefBacklightLevels">6</integer>
+    <string name="prefBacklightLevelsDawnTitle">Dawn</string>
+    <string name="prefBacklightLevelsDawn">prefBacklightLevelsDawn</string>
+    <integer name="prefBacklightLevelsDawnDefault">2</integer>
+    <string name="prefBacklightLevelsSunriseTitle">Sunrise</string>
+    <string name="prefBacklightLevelsSunrise">prefBacklightLevelsSunrise</string>
+    <integer name="prefBacklightLevelsSunriseDefault">3</integer>
+    <string name="prefBacklightLevelsSunriseEndTitle">Sunrise End</string>
+    <string name="prefBacklightLevelsSunriseEnd">prefBacklightLevelsSunriseEnd</string>
+    <integer name="prefBacklightLevelsSunriseEndDefault">4</integer>
+    <string name="prefBacklightLevelsDayTitle">Day</string>
+    <string name="prefBacklightLevelsDay">prefBacklightLevelsDay</string>
+    <integer name="prefBacklightLevelsDayDefault">6</integer>
+    <string name="prefBacklightLevelsSunsetTitle">Sunset</string>
+    <string name="prefBacklightLevelsSunset">prefBacklightLevelsSunset</string>
+    <integer name="prefBacklightLevelsSunsetDefault">5</integer>
+    <string name="prefBacklightLevelsSunsetEndTitle">Sunset End</string>
+    <string name="prefBacklightLevelsSunsetEnd">prefBacklightLevelsSunsetEnd</string>
+    <integer name="prefBacklightLevelsSunsetEndDefault">4</integer>
+    <string name="prefBacklightLevelsDuskTitle">Dusk</string>
+    <string name="prefBacklightLevelsDusk">prefBacklightLevelsDuk</string>
+    <integer name="prefBacklightLevelsDuskDefault">3</integer>
+    <string name="prefBacklightLevelsNightTitle">Night</string>
+    <string name="prefBacklightLevelsNight">prefBacklightLevelsNight</string>
+    <integer name="prefBacklightLevelsNightDefault">2</integer>
 </resources>

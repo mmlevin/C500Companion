@@ -28,5 +28,8 @@
     <header
         android:fragment="com.wmmaks.c500companion.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_poweramp" />
+    <header
+        android:fragment="com.wmmaks.c500companion.SettingsActivity$BacklightPreferenceFragment"
+        android:title="@string/pref_header_backlight" />
 
 </preference-headers>
