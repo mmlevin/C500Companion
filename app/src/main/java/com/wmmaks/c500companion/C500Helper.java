@@ -206,6 +206,8 @@ public class C500Helper {
 
     // Display settings
     public static final String BROADCAST_LANCHER_FUNC_BRIGHTNESS = "forfan.intent.action.BRIGHTNESS";
+    public static final String BROADCAST_LANCHER_FUNC_BRIGHTNESS_LEVEL = "forfan.intent.action.BRIGHT_LEVEL";
+    public static final String BROADCAST_LANCHER_FUNC_BRIGHTNESS_LEVEL_EXTRA = "brightness";
 
     // Mute
     public static final String BROADCAST_LANCHER_FUNC_MUTE = "forfan.intent.action.MUTE";

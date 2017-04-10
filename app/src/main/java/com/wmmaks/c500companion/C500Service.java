@@ -20,7 +20,9 @@
 
 package com.wmmaks.c500companion;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Context;
@@ -63,6 +65,8 @@ public class C500Service extends IntentService {
 
     private SharedPreferences settings;
     private int mMode;
+    double lat, lng;
+
     private C500Helper.C500_MODES mModes [] = {
             C500Helper.C500_MODES.C500_RADIO,
             C500Helper.C500_MODES.C500_MUSIC,
@@ -153,6 +157,15 @@ public class C500Service extends IntentService {
                         break;
                     case CMD_MODE_RESTORE_SLEEP:
                         Log.d(LOG_TAG,"Received RESTORE_SLEEP");
+
+                        Intent alarmIntent = new Intent ("com.wmmaks.c500companion.ACTION");
+                        alarmIntent.setClassName("com.wmmaks.c500companion","com.wmmaks.c500companion.C500Service");
+                        alarmIntent.putExtra("CMD",128);
+
+                        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                                SystemClock.elapsedRealtime(), 60 * 1000, PendingIntent.getService(getApplicationContext(),0,alarmIntent,0));
+
                         if (mModes[mMode] == C500Helper.C500_MODES.C500_MUSIC) {
                             SetMode(mModes[mMode], usePowerAmp,launchDirect);
                             if (playOnWakeup) {
@@ -252,6 +265,8 @@ public class C500Service extends IntentService {
     void RestoreState () {
         settings = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
         mMode = settings.getInt(PREFS_MODE,0);
+        lat = 51.685323;
+        lng = 39.172993;
     }
 
     void SaveState () {
@@ -263,11 +278,12 @@ public class C500Service extends IntentService {
 
     void UpdateBacklight () {
         BACKLIGHT_INDEX index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_NIGHT;
+        int brightness;
         Calendar calendar = Calendar.getInstance();
         SunCalc suncalc = new SunCalc();
 
         long time = calendar.getTimeInMillis();
-        suncalc.getTimes(time ,51.685323, 39.172993);
+        suncalc.getTimes(time , lat, lng);
 
         if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_DAWN_DUSK).riseTime)
                 && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_SUNSET).riseTime))
@@ -288,5 +304,32 @@ public class C500Service extends IntentService {
         if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_SUNSET).setTime)
                 && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_DAWN_DUSK).setTime))
             index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_DUSK;
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        switch (index) {
+            case BACKLIGHT_INDEX_DAWN:
+                brightness = sharedPref.getInt(getString(R.string.prefBacklightLevelsDawn),getResources().getInteger(R.integer.prefBacklightLevelsDawnDefault));
+                break;
+            case BACKLIGHT_INDEX_SUNRISE:
+                brightness = sharedPref.getInt(getString(R.string.prefBacklightLevelsSunrise),getResources().getInteger(R.integer.prefBacklightLevelsSunriseDefault));
+                break;
+            case BACKLIGHT_INDEX_DAY:
+                brightness = sharedPref.getInt(getString(R.string.prefBacklightLevelsDay),getResources().getInteger(R.integer.prefBacklightLevelsDayDefault));
+                break;
+            case BACKLIGHT_INDEX_SUNSET:
+                brightness = sharedPref.getInt(getString(R.string.prefBacklightLevelsSunset),getResources().getInteger(R.integer.prefBacklightLevelsSunsetDefault));
+                break;
+            case BACKLIGHT_INDEX_DUSK:
+                brightness = sharedPref.getInt(getString(R.string.prefBacklightLevelsDusk),getResources().getInteger(R.integer.prefBacklightLevelsDuskDefault));
+                break;
+            default:
+                brightness = sharedPref.getInt(getString(R.string.prefBacklightLevelsNight),getResources().getInteger(R.integer.prefBacklightLevelsNightDefault));
+                break;
+        }
+
+        Intent intent = new Intent (C500Helper.BROADCAST_LANCHER_FUNC_BRIGHTNESS_LEVEL);
+        intent.putExtra(C500Helper.BROADCAST_LANCHER_FUNC_BRIGHTNESS_LEVEL_EXTRA,brightness);
+        sendBroadcast(intent);
     }
 }
