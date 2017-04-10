@@ -6,6 +6,8 @@ package com.wmmaks.utils;
  https://github.com/mourner/suncalc
 */
 
+import java.util.Calendar;
+
 public class SunCalc {
 
     private static double rad = Math.PI / 180;
@@ -101,13 +103,22 @@ public class SunCalc {
         public double angle;
         public double riseTime;
         public String riseName;
+        public String riseTimeStr;
         public double setTime;
         public String setName;
+        public String setTimeStr;
         public TimeConfiguration (double a, String r, String s) {
             angle = a; riseName = r; setName = s;
         }
     };
 
+    public enum SUNCALC_TIME {
+        SUNCALC_SUNRISE_SUNSET,
+        SUNCALC_SUNRISE_END_SUNSET_START,
+        SUNCALC_DAWN_DUSK,
+        SUNCALC_NIGHT,
+        SUNCALC_GOLDEN_HOUR
+    }
     public TimeConfiguration times[] = {
             new TimeConfiguration(-0.833, "sunrise","sunset"), // Начало рассвета, конец заката
             new TimeConfiguration(0.3,"sunriseEnd","sunsetStart"), // Конец рассвета, начало заката
@@ -116,6 +127,10 @@ public class SunCalc {
             new TimeConfiguration(-18,"nightEnd","night"), // Конец/начало ночи
             new TimeConfiguration(6,"goldenHourEnd","goldenHour") // Золотой час
     };
+
+    public TimeConfiguration getTime (SUNCALC_TIME index) {
+        return times[index.ordinal()];
+    }
 
     // calculations for sun times
     private static double J0 = 0.0009;
@@ -158,6 +173,8 @@ public class SunCalc {
         result.solarNoon = fromJulian(Jnoon);
         result.nadir = fromJulian(Jnoon - 0.5);
 
+        Calendar cal = Calendar.getInstance();
+
         for (int i = 0, len = times.length; i < len; i += 1) {
             TimeConfiguration time = times[i];
 
@@ -165,7 +182,12 @@ public class SunCalc {
             double Jrise = Jnoon - (Jset - Jnoon);
 
             time.riseTime = fromJulian(Jrise);
+            cal.setTimeInMillis((long)time.riseTime);
+            time.riseTimeStr = cal.getTime().toString();
+
             time.setTime = fromJulian(Jset);
+            cal.setTimeInMillis((long)time.setTime);
+            time.setTimeStr = cal.getTime().toString();
         }
 
         return result;

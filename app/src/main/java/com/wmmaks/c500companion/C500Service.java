@@ -33,6 +33,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.wmmaks.utils.SunCalc;
+
+import java.util.Calendar;
+
 public class C500Service extends IntentService {
     private static final String LOG_TAG = "C500Companion";
     private static final String PREFS_NAME = "C500Preferences";
@@ -46,6 +50,7 @@ public class C500Service extends IntentService {
     private static final int CMD_MODE_CHANGE = 3;
     private static final int CMD_MODE_SEEK_UP = 4;
     private static final int CMD_MODE_SEEK_DOWN = 5;
+    private static final int CMD_BACKLIGHT_UPDATE = 128;
 
     public static final String POWERAMP_API_COMMAND = "com.maxmpz.audioplayer.API_COMMAND";
     public static final String POWERAMP_PACKAGE_NAME = "com.maxmpz.audioplayer";
@@ -63,6 +68,15 @@ public class C500Service extends IntentService {
             C500Helper.C500_MODES.C500_MUSIC,
             C500Helper.C500_MODES.C500_AVIN
     };
+
+    enum BACKLIGHT_INDEX {
+        BACKLIGHT_INDEX_DAWN,
+        BACKLIGHT_INDEX_SUNRISE,
+        BACKLIGHT_INDEX_DAY,
+        BACKLIGHT_INDEX_SUNSET,
+        BACKLIGHT_INDEX_DUSK,
+        BACKLIGHT_INDEX_NIGHT
+    }
 
     public C500Service() {
         super("C500Service");
@@ -184,6 +198,9 @@ public class C500Service extends IntentService {
                             }
                         }
                         break;
+                    case CMD_BACKLIGHT_UPDATE:
+                        UpdateBacklight();
+                        break;
                 }
                 SaveState();
             } else {
@@ -242,5 +259,34 @@ public class C500Service extends IntentService {
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(PREFS_MODE,mMode);
         editor.apply();
+    }
+
+    void UpdateBacklight () {
+        BACKLIGHT_INDEX index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_NIGHT;
+        Calendar calendar = Calendar.getInstance();
+        SunCalc suncalc = new SunCalc();
+
+        long time = calendar.getTimeInMillis();
+        suncalc.getTimes(time ,51.685323, 39.172993);
+
+        if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_DAWN_DUSK).riseTime)
+                && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_SUNSET).riseTime))
+            index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_DAWN;
+
+        if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_SUNSET).riseTime)
+                && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_END_SUNSET_START).riseTime))
+            index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_SUNRISE;
+
+        if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_END_SUNSET_START).riseTime)
+                && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_END_SUNSET_START).setTime))
+            index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_DAY;
+
+        if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_END_SUNSET_START).setTime)
+                && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_SUNSET).setTime))
+            index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_SUNSET;
+
+        if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_SUNSET).setTime)
+                && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_DAWN_DUSK).setTime))
+            index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_DUSK;
     }
 }

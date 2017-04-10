@@ -35,10 +35,8 @@ import android.widget.SeekBar;
 public class BacklightPreference extends DialogPreference {
     private SeekBar seekBarDawn;
     private SeekBar seekBarSunrise;
-    private SeekBar seekBarSunriseEnd;
     private SeekBar seekBarDay;
     private SeekBar seekBarSunset;
-    private SeekBar seekBarSunsetEnd;
     private SeekBar seekBarDusk;
     private SeekBar seekBarNight;
     private Resources resource;
@@ -59,17 +57,11 @@ public class BacklightPreference extends DialogPreference {
         seekBarSunrise = (SeekBar) view.findViewById(R.id.seekBarSunrise);
         seekBarSunrise.setProgress(pref.getInt(resource.getString(R.string.prefBacklightLevelsSunrise),resource.getInteger(R.integer.prefBacklightLevelsSunriseDefault)));
 
-        seekBarSunriseEnd = (SeekBar) view.findViewById(R.id.seekBarSunriseEnd);
-        seekBarSunriseEnd.setProgress(pref.getInt(resource.getString(R.string.prefBacklightLevelsSunriseEnd),resource.getInteger(R.integer.prefBacklightLevelsSunriseEndDefault)));
-
         seekBarDay = (SeekBar) view.findViewById(R.id.seekBarDay);
         seekBarDay.setProgress(pref.getInt(resource.getString(R.string.prefBacklightLevelsDay),resource.getInteger(R.integer.prefBacklightLevelsDayDefault)));
 
         seekBarSunset = (SeekBar) view.findViewById(R.id.seekBarSunset);
         seekBarSunset.setProgress(pref.getInt(resource.getString(R.string.prefBacklightLevelsSunset),resource.getInteger(R.integer.prefBacklightLevelsSunsetDefault)));
-
-        seekBarSunsetEnd = (SeekBar) view.findViewById(R.id.seekBarSunsetEnd);
-        seekBarSunsetEnd.setProgress(pref.getInt(resource.getString(R.string.prefBacklightLevelsSunsetEnd),resource.getInteger(R.integer.prefBacklightLevelsSunsetEndDefault)));
 
         seekBarDusk = (SeekBar) view.findViewById(R.id.seekBarDusk);
         seekBarDusk.setProgress(pref.getInt(resource.getString(R.string.prefBacklightLevelsDusk),resource.getInteger(R.integer.prefBacklightLevelsDuskDefault)));
@@ -86,10 +78,8 @@ public class BacklightPreference extends DialogPreference {
         SharedPreferences.Editor editor = getEditor();
         editor.putInt(resource.getString(R.string.prefBacklightLevelsDawn),seekBarDawn.getProgress());
         editor.putInt(resource.getString(R.string.prefBacklightLevelsSunrise),seekBarSunrise.getProgress());
-        editor.putInt(resource.getString(R.string.prefBacklightLevelsSunriseEnd),seekBarSunriseEnd.getProgress());
         editor.putInt(resource.getString(R.string.prefBacklightLevelsDay),seekBarDay.getProgress());
         editor.putInt(resource.getString(R.string.prefBacklightLevelsSunset),seekBarSunset.getProgress());
-        editor.putInt(resource.getString(R.string.prefBacklightLevelsSunsetEnd),seekBarSunsetEnd.getProgress());
         editor.putInt(resource.getString(R.string.prefBacklightLevelsDusk),seekBarDusk.getProgress());
         editor.putInt(resource.getString(R.string.prefBacklightLevelsNight),seekBarNight.getProgress());
         editor.commit();

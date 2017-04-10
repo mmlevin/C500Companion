@@ -67,20 +67,6 @@
                 android:progress="@integer/prefBacklightLevelsSunriseDefault" />
 
             <TextView
-                android:id="@+id/textViewSunriseEnd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/prefBacklightLevelsSunriseEndTitle" />
-
-            <SeekBar
-                android:id="@+id/seekBarSunriseEnd"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="@integer/prefBacklightLevels"
-                android:progress="@integer/prefBacklightLevelsSunriseEndDefault" />
-
-            <TextView
                 android:id="@+id/textViewDay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,20 +93,6 @@
                 android:layout_height="wrap_content"
                 android:max="@integer/prefBacklightLevels"
                 android:progress="@integer/prefBacklightLevelsSunsetDefault" />
-
-            <TextView
-                android:id="@+id/textViewSunsetEnd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/prefBacklightLevelsSunsetEndTitle" />
-
-            <SeekBar
-                android:id="@+id/seekBarSunsetEnd"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="@integer/prefBacklightLevels"
-                android:progress="@integer/prefBacklightLevelsSunsetEndDefault" />
 
             <TextView
                 android:id="@+id/textViewDusk"
