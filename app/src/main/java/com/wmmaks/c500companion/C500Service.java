@@ -20,6 +20,7 @@
 
 package com.wmmaks.c500companion;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
@@ -30,19 +31,23 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 
 import com.wmmaks.utils.SunCalc;
-
 import java.util.Calendar;
 
 public class C500Service extends IntentService {
     private static final String LOG_TAG = "C500Companion";
-    private static final String PREFS_NAME = "C500Preferences";
+    private static final String PREFS_NAME = "C500CompanionPreferences";
     private static final String PREFS_MODE = "C500Mode";
+    private static final String PREFS_LATITUDE = "C500CompanionLatitude";
+    private static final String PREFS_LONGITUDE = "C500CompanionLongitude";
 
     private static final String ACTION = "com.wmmaks.c500companion.ACTION";
     private static final String CMD = "CMD";
@@ -53,6 +58,7 @@ public class C500Service extends IntentService {
     private static final int CMD_MODE_SEEK_UP = 4;
     private static final int CMD_MODE_SEEK_DOWN = 5;
     private static final int CMD_BACKLIGHT_UPDATE = 128;
+    private static final int CMD_LOCATION_UPDATE = 129;
 
     public static final String POWERAMP_API_COMMAND = "com.maxmpz.audioplayer.API_COMMAND";
     public static final String POWERAMP_PACKAGE_NAME = "com.maxmpz.audioplayer";
@@ -67,7 +73,7 @@ public class C500Service extends IntentService {
     private int mMode;
     double lat, lng;
 
-    private C500Helper.C500_MODES mModes [] = {
+    private C500Helper.C500_MODES mModes[] = {
             C500Helper.C500_MODES.C500_RADIO,
             C500Helper.C500_MODES.C500_MUSIC,
             C500Helper.C500_MODES.C500_AVIN
@@ -86,7 +92,7 @@ public class C500Service extends IntentService {
         super("C500Service");
     }
 
-    public static void KeyPressDownAndUp(int key,Context context){
+    public static void KeyPressDownAndUp(int key, Context context) {
         long eventtime = SystemClock.uptimeMillis() - 1;
 
         Intent downIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null);
@@ -130,20 +136,20 @@ public class C500Service extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION.equals(action)) {
-                int param = intent.getIntExtra(CMD,0);
+                int param = intent.getIntExtra(CMD, 0);
                 RestoreState();
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-                boolean usePowerAmp = sharedPref.getBoolean(getString(R.string.prefPowerAmpUse),getResources().getBoolean(R.bool.prefPowerAmpUseDefault));
-                boolean usePowerAmpAPI = sharedPref.getBoolean(getString(R.string.prefPowerAmpUseApi),getResources().getBoolean(R.bool.prefPowerAmpUseApiDefault));
-                boolean pauseOnSleep = sharedPref.getBoolean(getString(R.string.prefPowerAmpPauseOnSleep),getResources().getBoolean(R.bool.prefPowerAmpPauseOnSleepDefault));
-                boolean playOnWakeup = sharedPref.getBoolean(getString(R.string.prefPowerAmpPlayOnWakeup),getResources().getBoolean(R.bool.prefPowerAmpPlayOnWakeupDefault));
-                boolean switchWithSeek = sharedPref.getBoolean(getString(R.string.prefPowerAmpSwitchWithSeek),getResources().getBoolean(R.bool.prefPowerAmpSwitchWithSeekDefault));
-                boolean launchDirect = sharedPref.getBoolean(getString(R.string.prefPowerAmpLaunchDirect),getResources().getBoolean(R.bool.prefPowerAmpLaunchDirectDefault));
+                boolean usePowerAmp = sharedPref.getBoolean(getString(R.string.prefPowerAmpUse), getResources().getBoolean(R.bool.prefPowerAmpUseDefault));
+                boolean usePowerAmpAPI = sharedPref.getBoolean(getString(R.string.prefPowerAmpUseApi), getResources().getBoolean(R.bool.prefPowerAmpUseApiDefault));
+                boolean pauseOnSleep = sharedPref.getBoolean(getString(R.string.prefPowerAmpPauseOnSleep), getResources().getBoolean(R.bool.prefPowerAmpPauseOnSleepDefault));
+                boolean playOnWakeup = sharedPref.getBoolean(getString(R.string.prefPowerAmpPlayOnWakeup), getResources().getBoolean(R.bool.prefPowerAmpPlayOnWakeupDefault));
+                boolean switchWithSeek = sharedPref.getBoolean(getString(R.string.prefPowerAmpSwitchWithSeek), getResources().getBoolean(R.bool.prefPowerAmpSwitchWithSeekDefault));
+                boolean launchDirect = sharedPref.getBoolean(getString(R.string.prefPowerAmpLaunchDirect), getResources().getBoolean(R.bool.prefPowerAmpLaunchDirectDefault));
 
                 switch (param) {
                     case CMD_MODE_ENTER_SLEEP:
-                        Log.d(LOG_TAG,"Received ENTER_SLEEP");
+                        Log.d(LOG_TAG, "Received ENTER_SLEEP");
                         if (pauseOnSleep) {
                             if (usePowerAmp && usePowerAmpAPI) {
                                 intent = new Intent(POWERAMP_API_COMMAND);
@@ -156,15 +162,17 @@ public class C500Service extends IntentService {
                         }
                         break;
                     case CMD_MODE_RESTORE_SLEEP:
-                        Log.d(LOG_TAG,"Received RESTORE_SLEEP");
+                        Log.d(LOG_TAG, "Received RESTORE_SLEEP");
 
-                        Intent alarmIntent = new Intent ("com.wmmaks.c500companion.ACTION");
-                        alarmIntent.setClassName("com.wmmaks.c500companion","com.wmmaks.c500companion.C500Service");
-                        alarmIntent.putExtra("CMD",128);
+                        UpdateBacklight();
+
+                        Intent alarmIntent = new Intent (ACTION);
+                        alarmIntent.setClassName(getPackageName(), getClass().getName());
+                        alarmIntent.putExtra(CMD,CMD_BACKLIGHT_UPDATE);
 
                         AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                                SystemClock.elapsedRealtime(), 60 * 1000, PendingIntent.getService(getApplicationContext(),0,alarmIntent,0));
+                        alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                                SystemClock.elapsedRealtime() + 60 * 1000, 60 * 1000, PendingIntent.getService(this,CMD_BACKLIGHT_UPDATE,alarmIntent,0));
 
                         if (mModes[mMode] == C500Helper.C500_MODES.C500_MUSIC) {
                             SetMode(mModes[mMode], usePowerAmp,launchDirect);
@@ -213,6 +221,21 @@ public class C500Service extends IntentService {
                         break;
                     case CMD_BACKLIGHT_UPDATE:
                         UpdateBacklight();
+                        break;
+                    case CMD_LOCATION_UPDATE:
+                        if (intent.hasExtra(LocationManager.KEY_LOCATION_CHANGED)) {
+                            Location location = (Location) intent.getExtras().get(LocationManager.KEY_LOCATION_CHANGED);
+                            if (location.hasAccuracy()) {
+                                if (settings == null) settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                                SharedPreferences.Editor editor = settings.edit();
+                                lat = location.getLatitude();
+                                lng = location.getLongitude();
+                                editor.putFloat(PREFS_LATITUDE, (float) lat);
+                                editor.putFloat(PREFS_LONGITUDE, (float) lng);
+                                editor.apply();
+                                Log.d(LOG_TAG,String.format("Location: %f,%f",lat,lng));
+                            }
+                        }
                         break;
                 }
                 SaveState();
@@ -263,10 +286,10 @@ public class C500Service extends IntentService {
     }
 
     void RestoreState () {
-        settings = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        if (settings == null) settings = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
         mMode = settings.getInt(PREFS_MODE,0);
-        lat = 51.685323;
-        lng = 39.172993;
+        lat = settings.getFloat(PREFS_LATITUDE,(float)51.685323);
+        lng = settings.getFloat(PREFS_LONGITUDE,(float)39.172993);
     }
 
     void SaveState () {
@@ -277,6 +300,13 @@ public class C500Service extends IntentService {
     }
 
     void UpdateBacklight () {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Intent locationIntent = new Intent (ACTION);
+            locationIntent.setClassName(getPackageName(),getClass().getName());
+            locationIntent.putExtra(CMD,CMD_LOCATION_UPDATE);
+            ((LocationManager) getSystemService(LOCATION_SERVICE)).requestSingleUpdate(LocationManager.GPS_PROVIDER,PendingIntent.getService(this,CMD_LOCATION_UPDATE,locationIntent,0));
+        }
+
         BACKLIGHT_INDEX index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_NIGHT;
         int brightness;
         Calendar calendar = Calendar.getInstance();

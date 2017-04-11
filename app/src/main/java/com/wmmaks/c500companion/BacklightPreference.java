@@ -28,10 +28,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.SeekBar;
 
-/**
- * Created by mmlevin on 10.04.2017.
- */
-
 public class BacklightPreference extends DialogPreference {
     private SeekBar seekBarDawn;
     private SeekBar seekBarSunrise;
@@ -83,6 +79,6 @@ public class BacklightPreference extends DialogPreference {
         editor.putInt(resource.getString(R.string.prefBacklightLevelsDusk),seekBarDusk.getProgress());
         editor.putInt(resource.getString(R.string.prefBacklightLevelsNight),seekBarNight.getProgress());
         editor.commit();
-        super.onDialogClosed(positiveResult);
+        super.onDialogClosed(true);
     }
 }

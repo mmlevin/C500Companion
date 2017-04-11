@@ -73,5 +73,5 @@
     <integer name="prefBacklightLevelsDuskDefault">3</integer>
     <string name="prefBacklightLevelsNightTitle">Night</string>
     <string name="prefBacklightLevelsNight">prefBacklightLevelsNight</string>
-    <integer name="prefBacklightLevelsNightDefault">2</integer>
+    <integer name="prefBacklightLevelsNightDefault">1</integer>
 </resources>
