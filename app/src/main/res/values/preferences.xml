@@ -74,4 +74,9 @@
     <string name="prefBacklightLevelsNightTitle">Night</string>
     <string name="prefBacklightLevelsNight">prefBacklightLevelsNight</string>
     <integer name="prefBacklightLevelsNightDefault">1</integer>
+
+    <string name="prefKeyDebugTitle">Debug key pressing</string>
+    <string name="prefKeyDebugSummary">Display pressed key code on screen</string>
+    <string name="prefKeyDebug" translatable="false">prefKeyDebug</string>
+    <bool name="prefKeyDebugDefault">false</bool>
 </resources>

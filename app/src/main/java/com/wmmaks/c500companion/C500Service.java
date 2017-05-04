@@ -33,11 +33,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.wmmaks.utils.SunCalc;
 import java.util.Calendar;
@@ -50,7 +53,10 @@ public class C500Service extends IntentService {
     private static final String PREFS_LONGITUDE = "C500CompanionLongitude";
 
     private static final String ACTION = "com.wmmaks.c500companion.ACTION";
+    private static final String ACTION_KEY = "com.wmmaks.c500companion.KEY";
+
     private static final String CMD = "CMD";
+    private static final String KEY = "KEY";
 
     private static final int CMD_MODE_ENTER_SLEEP = 1;
     private static final int CMD_MODE_RESTORE_SLEEP = 2;
@@ -130,6 +136,15 @@ public class C500Service extends IntentService {
         }
     }
 
+    private void toast(final String text, final int duration) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), text, duration).show();
+            }
+        });
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -239,7 +254,17 @@ public class C500Service extends IntentService {
                         break;
                 }
                 SaveState();
-            } else {
+            } else if (ACTION_KEY.equals(action)) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+                boolean useKeyDebug = sharedPref.getBoolean(getString(R.string.prefPowerAmpUse), getResources().getBoolean(R.bool.prefPowerAmpUseDefault));
+                if (useKeyDebug) {
+                    int key = intent.getIntExtra(KEY, 0);
+                    toast (getString(R.string.toast_key_code,key), Toast.LENGTH_SHORT);
+                }
+
+            } else
+            {
                 Log.d(LOG_TAG,"Received: " + action);
             }
         }
