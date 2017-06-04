@@ -273,7 +273,7 @@ public class C500Service extends IntentService {
             } else if (ACTION_KEY.equals(action)) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-                boolean useKeyDebug = sharedPref.getBoolean(getString(R.string.prefPowerAmpUse), getResources().getBoolean(R.bool.prefPowerAmpUseDefault));
+                boolean useKeyDebug = sharedPref.getBoolean(getString(R.string.prefKeyDebug), getResources().getBoolean(R.bool.prefKeyDebugDefault));
                 if (useKeyDebug) {
                     int key = intent.getIntExtra(KEY, 0);
                     toast (getString(R.string.toast_key_code,key), Toast.LENGTH_SHORT);
