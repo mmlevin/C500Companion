@@ -21,21 +21,10 @@
     */
  -->
 
-<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- These settings headers are only used on tablets. -->
-
-    <header
-        android:fragment="com.wmmaks.c500companion.SettingsActivity$GeneralPreferenceFragment"
-        android:title="@string/pref_header_poweramp" />
-    <header
-        android:fragment="com.wmmaks.c500companion.SettingsActivity$BacklightPreferenceFragment"
-        android:title="@string/pref_header_backlight" />
-    <header
-        android:fragment="com.wmmaks.c500companion.SettingsActivity$BluetoothPreferenceFragment"
-        android:title="@string/pref_header_bluetooth" />
-    <header
-        android:fragment="com.wmmaks.c500companion.SettingsActivity$DebugPreferenceFragment"
-        android:title="@string/pref_header_debug" />
-
-</preference-headers>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="@string/prefBluetoothTurnOffTitle"
+        android:key="@string/prefBluetoothTurnOff"
+        android:summary="@string/prefBluetoothTurnOffSummary"
+        android:defaultValue="@bool/prefBluetoothTurnOffDefault" />
+</PreferenceScreen>

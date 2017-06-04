@@ -49,6 +49,11 @@
     <string name="prefPowerAmpSwitchWithSeek" translatable="false">prefSwitchWithSeek</string>
     <bool name="prefPowerAmpSwitchWithSeekDefault">true</bool>
 
+    <string name="prefBluetoothTurnOffTitle">Keep Bluetooth off</string>
+    <string name="prefBluetoothTurnOffSummary">Always turn Bluetooth off when device boots or wakes up</string>
+    <string name="prefBluetoothTurnOff" translatable="false">prefBluetoothTurnOff</string>
+    <bool name="prefBluetoothTurnOffDefault">false</bool>
+
     <string name="prefBacklightUseTitle">Automatic backlight control</string>
     <string name="prefBacklightUseSummary">Control backlight level with day time</string>
     <string name="prefBacklightUse" translatable="false">prefBacklightUse</string>
