@@ -24,6 +24,7 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Context;
@@ -44,6 +45,8 @@ import android.widget.Toast;
 
 import com.wmmaks.utils.SunCalc;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class C500Service extends IntentService {
     private static final String LOG_TAG = "C500Companion";
@@ -161,6 +164,7 @@ public class C500Service extends IntentService {
                 boolean playOnWakeup = sharedPref.getBoolean(getString(R.string.prefPowerAmpPlayOnWakeup), getResources().getBoolean(R.bool.prefPowerAmpPlayOnWakeupDefault));
                 boolean switchWithSeek = sharedPref.getBoolean(getString(R.string.prefPowerAmpSwitchWithSeek), getResources().getBoolean(R.bool.prefPowerAmpSwitchWithSeekDefault));
                 boolean launchDirect = sharedPref.getBoolean(getString(R.string.prefPowerAmpLaunchDirect), getResources().getBoolean(R.bool.prefPowerAmpLaunchDirectDefault));
+                boolean turnOffBluetooth = sharedPref.getBoolean(getString(R.string.prefBluetoothTurnOff), getResources().getBoolean(R.bool.prefBluetoothTurnOffDefault));
 
                 switch (param) {
                     case CMD_MODE_ENTER_SLEEP:
@@ -201,6 +205,18 @@ public class C500Service extends IntentService {
                                     KeyPressDownAndUp(KeyEvent.KEYCODE_MEDIA_PLAY, this);
                                 }
                             }
+                        }
+
+                        if (turnOffBluetooth) {
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                    if (mBluetoothAdapter.isEnabled()){
+                                        mBluetoothAdapter.disable();
+                                    }
+                                }
+                            }, 5000);
                         }
                         break;
                     case CMD_MODE_CHANGE:
@@ -257,7 +273,7 @@ public class C500Service extends IntentService {
             } else if (ACTION_KEY.equals(action)) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-                boolean useKeyDebug = sharedPref.getBoolean(getString(R.string.prefPowerAmpUse), getResources().getBoolean(R.bool.prefPowerAmpUseDefault));
+                boolean useKeyDebug = sharedPref.getBoolean(getString(R.string.prefKeyDebug), getResources().getBoolean(R.bool.prefKeyDebugDefault));
                 if (useKeyDebug) {
                     int key = intent.getIntExtra(KEY, 0);
                     toast (getString(R.string.toast_key_code,key), Toast.LENGTH_SHORT);
