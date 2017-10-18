@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Secu3Droid - An open source, free manager for SECU-3 engine
+  control unit
+  Copyright (C) 2013 Maksim M. Levin. Russia, Voronezh
+  
+  SECU-3  - An open source, free engine control unit
+  Copyright (C) 2007 Alexey A. Shabelnikov. Ukraine, Gorlovka
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+  contacts:
+             http://secu-3.org
+             email: mmlevin@mail.ru
+-->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                style="@style/about_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_version" />
+
+            <TextView
+                android:id="@+id/about_version_name"
+                style="@style/about_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="SelectableText" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/about_text"
+            android:text="@string/about_copyright" />
+
+        <TextView
+            android:id="@+id/about_description"
+            style="@style/about_text"
+            android:text="@string/about_app_desc" />
+
+        <TextView
+            android:id="@+id/about_license"
+            style="@style/about_text"
+            android:autoLink="none"
+            android:text="@string/about_license" />
+
+        <TextView
+            android:id="@+id/about_sources"
+            style="@style/about_text"
+            android:text="@string/about_sources" />
+
+        <TextView
+            android:id="@+id/about_opensource"
+            style="@style/about_text"
+            android:text="@string/about_opensource" />
+        
+        <TextView
+            android:id="@+id/about_acknowledgements"
+            style="@style/about_text"
+            android:text="@string/about_acknowledgements" />
+    </LinearLayout>
+
+</ScrollView>

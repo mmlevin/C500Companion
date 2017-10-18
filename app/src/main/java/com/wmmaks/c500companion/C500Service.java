@@ -341,6 +341,13 @@ public class C500Service extends IntentService {
     }
 
     void UpdateBacklight () {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        boolean useBacklightDay = sharedPref.getBoolean(getString(R.string.prefBacklightDayUse),getResources().getBoolean(R.bool.prefBacklightDayUseDefault));
+        boolean useBacklightNight = sharedPref.getBoolean(getString(R.string.prefBacklightNightUse),getResources().getBoolean(R.bool.prefBacklightNightUseDefault));
+
+        if (!(useBacklightDay || useBacklightNight)) return;
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Intent locationIntent = new Intent (ACTION);
             locationIntent.setClassName(getPackageName(),getClass().getName());
@@ -376,8 +383,6 @@ public class C500Service extends IntentService {
                 && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_DAWN_DUSK).setTime))
             index = BACKLIGHT_INDEX.BACKLIGHT_INDEX_DUSK;
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
         switch (index) {
             case BACKLIGHT_INDEX_DAWN:
                 brightness = sharedPref.getInt(getString(R.string.prefBacklightLevelsDawn),getResources().getInteger(R.integer.prefBacklightLevelsDawnDefault));
@@ -399,8 +404,16 @@ public class C500Service extends IntentService {
                 break;
         }
 
-        Intent intent = new Intent (C500Helper.BROADCAST_LANCHER_FUNC_BRIGHTNESS_LEVEL);
-        intent.putExtra(C500Helper.BROADCAST_LANCHER_FUNC_BRIGHTNESS_LEVEL_EXTRA,brightness);
-        sendBroadcast(intent);
+        if (useBacklightDay) {
+            Intent intent = new Intent (C500Helper.BROADCAST_LANCHER_FUNC_BRIGHT_LEVEL_DAY);
+            intent.putExtra(C500Helper.BROADCAST_LANCHER_FUNC_BRIGHT_LEVEL_EXTRA,brightness);
+            sendBroadcast(intent);
+        }
+
+        if (useBacklightNight) {
+            Intent intent = new Intent (C500Helper.BROADCAST_LANCHER_FUNC_BRIGHT_LEVEL_NIGHT);
+            intent.putExtra(C500Helper.BROADCAST_LANCHER_FUNC_BRIGHT_LEVEL_EXTRA,brightness);
+            sendBroadcast(intent);
+        }
     }
 }

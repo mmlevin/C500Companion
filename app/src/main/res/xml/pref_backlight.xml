@@ -23,10 +23,15 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
-        android:title="@string/prefBacklightUseTitle"
-        android:summary="@string/prefBacklightUseSummary"
-        android:key="@string/prefBacklightUse"
-        android:defaultValue="@bool/prefBacklightUseDefault" />
+        android:title="@string/prefBacklightDayUseTitle"
+        android:summary="@string/prefBacklightDayUseSummary"
+        android:key="@string/prefBacklightDayUse"
+        android:defaultValue="@bool/prefBacklightDayUseDefault" />
+    <SwitchPreference
+        android:title="@string/prefBacklightNightUseTitle"
+        android:summary="@string/prefBacklightNightUseSummary"
+        android:key="@string/prefBacklightNightUse"
+        android:defaultValue="@bool/prefBacklightNightUseDefault" />
     <com.wmmaks.c500companion.BacklightPreference
         android:title="@string/prefBacklightLevelsTitle" />
 </PreferenceScreen>

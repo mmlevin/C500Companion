@@ -38,4 +38,8 @@
         android:fragment="com.wmmaks.c500companion.SettingsActivity$DebugPreferenceFragment"
         android:title="@string/pref_header_debug" />
 
+    <header
+        android:fragment="com.wmmaks.c500companion.AboutFragment"
+        android:title="About..." />
+
 </preference-headers>

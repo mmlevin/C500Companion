@@ -25,6 +25,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -32,11 +33,20 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -58,6 +68,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
 
     private static int PERMISSION_REQUEST_CODE = 0xBEEF;
+    private static final String LOG_TAG = "C500Companion";
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -172,7 +183,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || BacklightPreferenceFragment.class.getName().equals(fragmentName)
                 || BluetoothPreferenceFragment.class.getName().equals(fragmentName)
-                || DebugPreferenceFragment.class.getName().equals(fragmentName);
+                || DebugPreferenceFragment.class.getName().equals(fragmentName)
+                || AboutFragment.class.getName().equals(fragmentName);
     }
 
     /**

@@ -54,10 +54,15 @@
     <string name="prefBluetoothTurnOff" translatable="false">prefBluetoothTurnOff</string>
     <bool name="prefBluetoothTurnOffDefault">false</bool>
 
-    <string name="prefBacklightUseTitle">Automatic backlight control</string>
-    <string name="prefBacklightUseSummary">Control backlight level with day time</string>
-    <string name="prefBacklightUse" translatable="false">prefBacklightUse</string>
-    <bool name="prefBacklightUseDefault">true</bool>
+    <string name="prefBacklightDayUseTitle">Automatic backlight control for day level</string>
+    <string name="prefBacklightDayUseSummary">Control day backlight level with daytime</string>
+    <string name="prefBacklightDayUse" translatable="false">prefBacklightDayUse</string>
+    <bool name="prefBacklightDayUseDefault">true</bool>
+
+    <string name="prefBacklightNightUseTitle">Automatic backlight control for night level</string>
+    <string name="prefBacklightNightUseSummary">Control night backlight level with daytime</string>
+    <string name="prefBacklightNightUse" translatable="false">prefBacklightNightUse</string>
+    <bool name="prefBacklightNightUseDefault">true</bool>
 
     <string name="prefBacklightLevelsTitle">Backlight levels</string>
     <integer name="prefBacklightLevels">6</integer>
