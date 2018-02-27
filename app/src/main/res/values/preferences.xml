@@ -24,6 +24,34 @@
  -->
 
 <resources>
+    <string name="prefSourceRadioTitle">Radio</string>
+    <string name="prefSourceRadio" translatable="false">prefSourceRadio</string>
+    <bool name="prefSourceRadioDefault">true</bool>
+
+    <string name="prefSourceDVDTitle">DVD</string>
+    <string name="prefSourceDVD" translatable="false">prefSourceDVD</string>
+    <bool name="prefSourceDVDDefault">false</bool>
+
+    <string name="prefSourceVideoTitle">Video</string>
+    <string name="prefSourceVideo" translatable="false">prefSourceVideo</string>
+    <bool name="prefSourceVideoDefault">false</bool>
+
+    <string name="prefSourceMusicTitle">Music</string>
+    <string name="prefSourceMusic" translatable="false">prefSourceMusic</string>
+    <bool name="prefSourceMusicDefault">true</bool>
+
+    <string name="prefSourceBTTitle">Bluetooth</string>
+    <string name="prefSourceBT" translatable="false">prefSourceBT</string>
+    <bool name="prefSourceBTDefault">false</bool>
+
+    <string name="prefSourceCMMBTitle">Digital TV</string>
+    <string name="prefSourceCMMB" translatable="false">prefSourceCMMB</string>
+    <bool name="prefSourceCMMBDefault">false</bool>
+
+    <string name="prefSourceAVInTitle">AV In</string>
+    <string name="prefSourceAVIn" translatable="false">prefSourceAVIn</string>
+    <bool name="prefSourceAVInDefault">false</bool>
+
     <string name="prefPowerAmpUseTitle">Use PowerAMP instead of build-in</string>
     <string name="prefPowerAmpUseSummary">Replace standard player with PowerAMP when switch mode</string>
     <string name="prefPowerAmpUse" translatable="false">prefPowerAMPUse</string>

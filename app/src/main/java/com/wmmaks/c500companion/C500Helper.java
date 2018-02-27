@@ -59,6 +59,55 @@ public class C500Helper {
         C500_WEATHER
     };
 
+    public enum C500_WINDOW {
+        C500_WIN_MAIN,
+        C500_WIN_NAVI,
+        C500_WIN_RADIO,
+        C500_WIN_DVD,
+        C500_WIN_USB1,
+        C500_WIN_USB2,
+        C500_WIN_SD,
+        C500_WIN_BT,
+        C500_WIN_CMMB,
+        C500_WIN_AUX,
+        C500_WIN_AVIN,
+        C500_WIN_SETUP,
+        C500_WIN_TRAFFICRECORD,
+        C500_WIN_IPOD,
+        C500_WIN_FCAM,
+        C500_WIN_FACTORY,
+        C500_WIN_AUTH,
+        C500_WIN_BOOT_LOGO,
+        C500_WIN_MCU_UPDATE,
+        C500_WIN_C_STUDY,
+        C500_WIN_FILE_COPY,
+        C500_WIN_DVD_BOX,
+        C500_WIN_RECOGNIZE,
+        C500_WIN_ATV
+    }
+
+    public enum C500_WIN_BT_MODES {
+        C500_WIN_BT_CONNECT,
+        C500_WIN_BT_CALLING,
+        C500_WIN_BT_PHONEBOOK,
+        C500_WIN_BT_DIAL,
+        C500_WIN_BT_MUSIC
+    };
+
+    public enum C500_WIN_SETUP_MODES {
+        C500_WIN_SETUP_GENERAL,
+        C500_WIN_SETUP_DISPLAY,
+        C500_WIN_SETUP_VOLUME,
+        C500_WIN_SETUP_EQ,
+        C500_WIN_SETUP_VIDEO,
+        C500_WIN_SETUP_GPS,
+        C500_WIN_SETUP_BT,
+        C500_WIN_SETUP_WHEEL,
+        C500_WIN_SETUP_EQUIP,
+        C500_WIN_SETUP_MAIN,
+        C500_WIN_SETUP_GPS_PATH
+    }
+
     public static final String ACTION_MAINUI_ACCOFF = "com.ts.main.uiaccoff";
 
     // General broadcast action

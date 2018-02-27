@@ -26,8 +26,13 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.wmmaks.c500companion.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.wmmaks.c500companion.SettingsActivity$SourcesPreferenceFragment"
+        android:title="@string/pref_header_sources" />
+
+    <header
+        android:fragment="com.wmmaks.c500companion.SettingsActivity$PowerAMPPreferenceFragment"
         android:title="@string/pref_header_poweramp" />
+
     <header
         android:fragment="com.wmmaks.c500companion.SettingsActivity$BacklightPreferenceFragment"
         android:title="@string/pref_header_backlight" />

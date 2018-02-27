@@ -50,13 +50,15 @@ import java.util.TimerTask;
 
 public class C500Service extends IntentService {
     private static final String LOG_TAG = "C500Companion";
-    private static final String PREFS_NAME = "C500CompanionPreferences";
     private static final String PREFS_MODE = "C500Mode";
     private static final String PREFS_LATITUDE = "C500CompanionLatitude";
     private static final String PREFS_LONGITUDE = "C500CompanionLongitude";
 
     private static final String ACTION = "com.wmmaks.c500companion.ACTION";
     private static final String ACTION_KEY = "com.wmmaks.c500companion.KEY";
+
+    private static final String WINDOW = "WIN";
+    private static final String PARAM = "PARAM";
 
     private static final String CMD = "CMD";
     private static final String KEY = "KEY";
@@ -66,6 +68,7 @@ public class C500Service extends IntentService {
     private static final int CMD_MODE_CHANGE = 3;
     private static final int CMD_MODE_SEEK_UP = 4;
     private static final int CMD_MODE_SEEK_DOWN = 5;
+    private static final int CMD_MODE_WINDOW = 6;
     private static final int CMD_BACKLIGHT_UPDATE = 128;
     private static final int CMD_LOCATION_UPDATE = 129;
 
@@ -79,13 +82,32 @@ public class C500Service extends IntentService {
     public static final int POWERAMP_API_COMMAND_PREVIOUS = 5;
 
     private SharedPreferences settings;
-    private int mMode;
-    double lat, lng;
+    private C500Helper.C500_WINDOW mLastWindow = C500Helper.C500_WINDOW.C500_WIN_MAIN;
+    private double mLatitude, mLongitude;
+    private boolean mUsePowerAmp;
+    private boolean mUsePowerAmpAPI;
+    private boolean mPauseOnSleep;
+    private boolean mPlayOnWakeup;
+    private boolean mSwitchWithSeek;
+    private boolean mLaunchDirect;
+    private boolean mTurnOffBluetooth;
+    private boolean mLocationAccuracy = false;
+    private Location mLocation;
 
-    private C500Helper.C500_MODES mModes[] = {
-            C500Helper.C500_MODES.C500_RADIO,
-            C500Helper.C500_MODES.C500_MUSIC,
-            C500Helper.C500_MODES.C500_AVIN
+    private static final int SOURCES_COUNT = 7;
+
+    private C500Helper.C500_WINDOW mWindows[] = {
+            C500Helper.C500_WINDOW.C500_WIN_RADIO,
+            C500Helper.C500_WINDOW.C500_WIN_DVD,
+            C500Helper.C500_WINDOW.C500_WIN_USB1,
+            C500Helper.C500_WINDOW.C500_WIN_SD,
+            C500Helper.C500_WINDOW.C500_WIN_BT,
+            C500Helper.C500_WINDOW.C500_WIN_CMMB,
+            C500Helper.C500_WINDOW.C500_WIN_AVIN
+    };
+
+    private boolean mWindowsEnabled[] = {
+            true, false, false, true, false,false,false
     };
 
     enum BACKLIGHT_INDEX {
@@ -156,21 +178,12 @@ public class C500Service extends IntentService {
             if (ACTION.equals(action)) {
                 int param = intent.getIntExtra(CMD, 0);
                 RestoreState();
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-                boolean usePowerAmp = sharedPref.getBoolean(getString(R.string.prefPowerAmpUse), getResources().getBoolean(R.bool.prefPowerAmpUseDefault));
-                boolean usePowerAmpAPI = sharedPref.getBoolean(getString(R.string.prefPowerAmpUseApi), getResources().getBoolean(R.bool.prefPowerAmpUseApiDefault));
-                boolean pauseOnSleep = sharedPref.getBoolean(getString(R.string.prefPowerAmpPauseOnSleep), getResources().getBoolean(R.bool.prefPowerAmpPauseOnSleepDefault));
-                boolean playOnWakeup = sharedPref.getBoolean(getString(R.string.prefPowerAmpPlayOnWakeup), getResources().getBoolean(R.bool.prefPowerAmpPlayOnWakeupDefault));
-                boolean switchWithSeek = sharedPref.getBoolean(getString(R.string.prefPowerAmpSwitchWithSeek), getResources().getBoolean(R.bool.prefPowerAmpSwitchWithSeekDefault));
-                boolean launchDirect = sharedPref.getBoolean(getString(R.string.prefPowerAmpLaunchDirect), getResources().getBoolean(R.bool.prefPowerAmpLaunchDirectDefault));
-                boolean turnOffBluetooth = sharedPref.getBoolean(getString(R.string.prefBluetoothTurnOff), getResources().getBoolean(R.bool.prefBluetoothTurnOffDefault));
 
                 switch (param) {
                     case CMD_MODE_ENTER_SLEEP:
                         Log.d(LOG_TAG, "Received ENTER_SLEEP");
-                        if (pauseOnSleep) {
-                            if (usePowerAmp && usePowerAmpAPI) {
+                        if (mPauseOnSleep) {
+                            if (mUsePowerAmp && mUsePowerAmpAPI) {
                                 intent = new Intent(POWERAMP_API_COMMAND);
                                 intent.setPackage(POWERAMP_PACKAGE_NAME);
                                 intent.putExtra(POWERAMP_API_COMMAND_CMD, POWERAMP_API_COMMAND_PAUSE);
@@ -193,10 +206,10 @@ public class C500Service extends IntentService {
                         alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                                 SystemClock.elapsedRealtime() + 60 * 1000, 60 * 1000, PendingIntent.getService(this,CMD_BACKLIGHT_UPDATE,alarmIntent,0));
 
-                        if (mModes[mMode] == C500Helper.C500_MODES.C500_MUSIC) {
-                            SetMode(mModes[mMode], usePowerAmp,launchDirect);
-                            if (playOnWakeup) {
-                                if (usePowerAmp && usePowerAmpAPI) {
+                        if (mLastWindow == C500Helper.C500_WINDOW.C500_WIN_SD) {
+                            SetMode(mLastWindow);
+                            if (mPlayOnWakeup) {
+                                if (mUsePowerAmp && mUsePowerAmpAPI) {
                                     intent = new Intent(POWERAMP_API_COMMAND);
                                     intent.setPackage(POWERAMP_PACKAGE_NAME);
                                     intent.putExtra(POWERAMP_API_COMMAND_CMD, POWERAMP_API_COMMAND_RESUME);
@@ -207,7 +220,7 @@ public class C500Service extends IntentService {
                             }
                         }
 
-                        if (turnOffBluetooth) {
+                        if (mTurnOffBluetooth) {
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
@@ -221,13 +234,12 @@ public class C500Service extends IntentService {
                         break;
                     case CMD_MODE_CHANGE:
                         Log.d(LOG_TAG,"Received mode change");
-                        if (++mMode >= mModes.length) {mMode = 0;}
-                        SetMode(mModes[mMode],usePowerAmp,launchDirect);
+                        NextMode(mLastWindow);
                         break;
                     case CMD_MODE_SEEK_DOWN:
                         Log.d(LOG_TAG,"Received SEEK_DOWN");
-                        if (switchWithSeek) {
-                            if (usePowerAmp && usePowerAmpAPI) {
+                        if (mSwitchWithSeek) {
+                            if (mUsePowerAmp && mUsePowerAmpAPI) {
                                 intent = new Intent(POWERAMP_API_COMMAND);
                                 intent.setPackage(POWERAMP_PACKAGE_NAME);
                                 intent.putExtra(POWERAMP_API_COMMAND_CMD, POWERAMP_API_COMMAND_PREVIOUS);
@@ -239,8 +251,8 @@ public class C500Service extends IntentService {
                         break;
                     case CMD_MODE_SEEK_UP:
                         Log.d(LOG_TAG,"Received SEEK_UP");
-                        if (switchWithSeek) {
-                            if (usePowerAmp && usePowerAmpAPI) {
+                        if (mSwitchWithSeek) {
+                            if (mUsePowerAmp && mUsePowerAmpAPI) {
                                 intent = new Intent(POWERAMP_API_COMMAND);
                                 intent.setPackage(POWERAMP_PACKAGE_NAME);
                                 intent.putExtra(POWERAMP_API_COMMAND_CMD, POWERAMP_API_COMMAND_NEXT);
@@ -250,22 +262,19 @@ public class C500Service extends IntentService {
                             }
                         }
                         break;
+                    case CMD_MODE_WINDOW:
+                        Log.d(LOG_TAG,"Received MODE_WINDOW");
+                        int win = intent.getIntExtra (WINDOW, 0);
+                        int winparam = intent.getIntExtra(PARAM,0);
+                        UpdateMode (win,winparam);
+                        break;
                     case CMD_BACKLIGHT_UPDATE:
                         UpdateBacklight();
                         break;
                     case CMD_LOCATION_UPDATE:
                         if (intent.hasExtra(LocationManager.KEY_LOCATION_CHANGED)) {
-                            Location location = (Location) intent.getExtras().get(LocationManager.KEY_LOCATION_CHANGED);
-                            if (location.hasAccuracy()) {
-                                if (settings == null) settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                                SharedPreferences.Editor editor = settings.edit();
-                                lat = location.getLatitude();
-                                lng = location.getLongitude();
-                                editor.putFloat(PREFS_LATITUDE, (float) lat);
-                                editor.putFloat(PREFS_LONGITUDE, (float) lng);
-                                editor.apply();
-                                Log.d(LOG_TAG,String.format("Location: %f,%f",lat,lng));
-                            }
+                            mLocation = (Location) intent.getExtras().get(LocationManager.KEY_LOCATION_CHANGED);
+                            mLocationAccuracy = mLocation.hasAccuracy();
                         }
                         break;
                 }
@@ -286,13 +295,80 @@ public class C500Service extends IntentService {
         }
     }
 
-    private void SetMode(C500Helper.C500_MODES mode, boolean usePowerAmp, boolean launchDirect) {
-        Log.d(LOG_TAG,"Switching to " + mode.name());
+    private void UpdateMode (int window, int param) {
+        C500Helper.C500_WINDOW tmpWindow = C500Helper.C500_WINDOW.values()[window];
+        switch (tmpWindow) {
+            case C500_WIN_RADIO:
+            case C500_WIN_DVD:
+            case C500_WIN_USB1:
+            case C500_WIN_USB2:
+            case C500_WIN_SD:
+            case C500_WIN_BT:
+            case C500_WIN_CMMB:
+            case C500_WIN_AUX:
+            case C500_WIN_AVIN:
+            case C500_WIN_DVD_BOX:
+            case C500_WIN_ATV:
+                mLastWindow = tmpWindow;
+            default:
+                mLastWindow = C500Helper.C500_WINDOW.C500_WIN_MAIN;
+        }
+    }
+
+    private void NextMode (C500Helper.C500_WINDOW window) {
+        int mWindowIndex = -1;
+
+        for (int i = 0; i != SOURCES_COUNT; ++i) {
+            if (window == mWindows[i]) {
+                mWindowIndex = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i != SOURCES_COUNT; ++i) {
+            if (++mWindowIndex >= SOURCES_COUNT) mWindowIndex = 0;
+            if (mWindowsEnabled[mWindowIndex]) break;
+        }
+
+        mLastWindow = mWindows[mWindowIndex];
+
+        SetMode(mLastWindow);
+    }
+
+    private void SetMode(C500Helper.C500_WINDOW window) {
+        Log.d(LOG_TAG,"Switching to " + window.name());
         Intent intent;
-        switch (mode) {
-            case C500_MUSIC:
-                if (usePowerAmp) {
-                    if (launchDirect) {
+
+        mLastWindow = window;
+
+        switch (window) {
+            case C500_WIN_RADIO:
+                intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_RADIO);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
+                sendBroadcast(intent);
+                break;
+
+            case C500_WIN_DVD:
+                intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_DVD);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
+                sendBroadcast(intent);
+                break;
+
+            case C500_WIN_USB1:
+                intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_MOVIE);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
+                sendBroadcast(intent);
+                break;
+
+            case C500_WIN_SD:
+                if (mUsePowerAmp) {
+                    if (mLaunchDirect) {
                         openApplication(this, POWERAMP_PACKAGE_NAME);
                     } else {
                         intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
@@ -309,14 +385,21 @@ public class C500Service extends IntentService {
                     sendBroadcast(intent);
                 }
                 break;
-            case C500_RADIO:
+            case C500_WIN_BT:
                 intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
                 intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
-                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_RADIO);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_BLUETOOTH);
                 intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
                 sendBroadcast(intent);
                 break;
-            case C500_AVIN:
+            case C500_WIN_CMMB:
+                intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_TV);
+                intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_ACTION_OPEN);
+                sendBroadcast(intent);
+                break;
+            case C500_WIN_AVIN:
                 intent = new Intent (C500Helper.ACTION_RECOGNIZE_CMD);
                 intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE);
                 intent.putExtra(C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME, C500Helper.ACTION_RECOGNIZE_CMD_DOMAIN_DEVICE_NAME_AVIN);
@@ -327,16 +410,51 @@ public class C500Service extends IntentService {
     }
 
     void RestoreState () {
-        if (settings == null) settings = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-        mMode = settings.getInt(PREFS_MODE,0);
-        lat = settings.getFloat(PREFS_LATITUDE,(float)51.685323);
-        lng = settings.getFloat(PREFS_LONGITUDE,(float)39.172993);
+        if (settings == null) settings = PreferenceManager.getDefaultSharedPreferences(this);
+
+        mLastWindow = C500Helper.C500_WINDOW.values()[settings.getInt(PREFS_MODE,0)];
+        mLatitude = settings.getFloat(PREFS_LATITUDE,(float)51.685323);
+        mLongitude = settings.getFloat(PREFS_LONGITUDE,(float)39.172993);
+        mUsePowerAmp = settings.getBoolean(getString(R.string.prefPowerAmpUse), getResources().getBoolean(R.bool.prefPowerAmpUseDefault));
+        mUsePowerAmpAPI = settings.getBoolean(getString(R.string.prefPowerAmpUseApi), getResources().getBoolean(R.bool.prefPowerAmpUseApiDefault));
+        mPauseOnSleep = settings.getBoolean(getString(R.string.prefPowerAmpPauseOnSleep), getResources().getBoolean(R.bool.prefPowerAmpPauseOnSleepDefault));
+        mPlayOnWakeup = settings.getBoolean(getString(R.string.prefPowerAmpPlayOnWakeup), getResources().getBoolean(R.bool.prefPowerAmpPlayOnWakeupDefault));
+        mSwitchWithSeek = settings.getBoolean(getString(R.string.prefPowerAmpSwitchWithSeek), getResources().getBoolean(R.bool.prefPowerAmpSwitchWithSeekDefault));
+        mLaunchDirect = settings.getBoolean(getString(R.string.prefPowerAmpLaunchDirect), getResources().getBoolean(R.bool.prefPowerAmpLaunchDirectDefault));
+        mTurnOffBluetooth = settings.getBoolean(getString(R.string.prefBluetoothTurnOff), getResources().getBoolean(R.bool.prefBluetoothTurnOffDefault));
+
+        mWindowsEnabled[0] = settings.getBoolean(getString(R.string.prefSourceRadio),getResources().getBoolean(R.bool.prefSourceRadioDefault));
+        mWindowsEnabled[1] = settings.getBoolean(getString(R.string.prefSourceDVD),getResources().getBoolean(R.bool.prefSourceDVDDefault));
+        mWindowsEnabled[2] = settings.getBoolean(getString(R.string.prefSourceVideo),getResources().getBoolean(R.bool.prefSourceVideoDefault));
+        mWindowsEnabled[3] = settings.getBoolean(getString(R.string.prefSourceMusic),getResources().getBoolean(R.bool.prefSourceMusicDefault));
+        mWindowsEnabled[4] = settings.getBoolean(getString(R.string.prefSourceBT),getResources().getBoolean(R.bool.prefSourceBTDefault));
+        mWindowsEnabled[5] = settings.getBoolean(getString(R.string.prefSourceCMMB),getResources().getBoolean(R.bool.prefSourceCMMBDefault));
+        mWindowsEnabled[6] = settings.getBoolean(getString(R.string.prefSourceAVIn),getResources().getBoolean(R.bool.prefSourceAVInDefault));
+
+        boolean tst = false;
+        for (int i = 0; i != SOURCES_COUNT; ++i) {
+            if (mWindowsEnabled[i]) {
+                tst = true;
+                break;
+            }
+        }
+        if (!tst) mWindowsEnabled[0] = true;
     }
 
     void SaveState () {
-        if (settings == null) settings = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        if (settings == null) settings = PreferenceManager.getDefaultSharedPreferences(this);
+
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(PREFS_MODE,mMode);
+        editor.putInt(PREFS_MODE, mLastWindow.ordinal());
+
+        if (mLocationAccuracy) {
+            mLatitude = mLocation.getLatitude();
+            mLongitude = mLocation.getLongitude();
+            editor.putFloat(PREFS_LATITUDE, (float) mLatitude);
+            editor.putFloat(PREFS_LONGITUDE, (float) mLongitude);
+            Log.d(LOG_TAG,String.format("Location: %f,%f", mLatitude, mLongitude));
+        }
+
         editor.apply();
     }
 
@@ -361,7 +479,7 @@ public class C500Service extends IntentService {
         SunCalc suncalc = new SunCalc();
 
         long time = calendar.getTimeInMillis();
-        suncalc.getTimes(time , lat, lng);
+        suncalc.getTimes(time , mLatitude, mLongitude);
 
         if ((time >= suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_DAWN_DUSK).riseTime)
                 && (time < suncalc.getTime(SunCalc.SUNCALC_TIME.SUNCALC_SUNRISE_SUNSET).riseTime))

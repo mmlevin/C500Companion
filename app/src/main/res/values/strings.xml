@@ -23,6 +23,7 @@
 
 <resources>
     <string name="app_name">C500 Companion</string>
+    <string name="pref_header_sources">Source switch</string>
     <string name="pref_header_poweramp">PowerAMP</string>
     <string name="pref_header_backlight">Backlight</string>
     <string name="pref_header_bluetooth">Bluetooth</string>
