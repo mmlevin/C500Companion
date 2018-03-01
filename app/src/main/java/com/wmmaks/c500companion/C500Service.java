@@ -81,7 +81,6 @@ public class C500Service extends IntentService {
     public static final int POWERAMP_API_COMMAND_NEXT = 4;
     public static final int POWERAMP_API_COMMAND_PREVIOUS = 5;
 
-    private SharedPreferences settings;
     private C500Helper.C500_WINDOW mLastWindow = C500Helper.C500_WINDOW.C500_WIN_MAIN;
     private double mLatitude, mLongitude;
     private boolean mUsePowerAmp;
@@ -263,9 +262,13 @@ public class C500Service extends IntentService {
                         }
                         break;
                     case CMD_MODE_WINDOW:
-                        Log.d(LOG_TAG,"Received MODE_WINDOW");
                         int win = intent.getIntExtra (WINDOW, 0);
                         int winparam = intent.getIntExtra(PARAM,0);
+                        if (win < C500Helper.C500_WINDOW.values().length) {
+                            Log.d(LOG_TAG, "Received MODE_WINDOW: " + C500Helper.C500_WINDOW.values()[win].name());
+                        } else {
+                            Log.d(LOG_TAG, "Received MODE_WINDOW: Unknown!");
+                        }
                         UpdateMode (win,winparam);
                         break;
                     case CMD_BACKLIGHT_UPDATE:
@@ -296,22 +299,23 @@ public class C500Service extends IntentService {
     }
 
     private void UpdateMode (int window, int param) {
-        C500Helper.C500_WINDOW tmpWindow = C500Helper.C500_WINDOW.values()[window];
-        switch (tmpWindow) {
-            case C500_WIN_RADIO:
-            case C500_WIN_DVD:
-            case C500_WIN_USB1:
-            case C500_WIN_USB2:
-            case C500_WIN_SD:
-            case C500_WIN_BT:
-            case C500_WIN_CMMB:
-            case C500_WIN_AUX:
-            case C500_WIN_AVIN:
-            case C500_WIN_DVD_BOX:
-            case C500_WIN_ATV:
-                mLastWindow = tmpWindow;
-            default:
-                mLastWindow = C500Helper.C500_WINDOW.C500_WIN_MAIN;
+        mLastWindow = C500Helper.C500_WINDOW.C500_WIN_MAIN;
+        if (window < C500Helper.C500_WINDOW.values().length) {
+            C500Helper.C500_WINDOW tmpWindow = C500Helper.C500_WINDOW.values()[window];
+            switch (tmpWindow) {
+                case C500_WIN_RADIO:
+                case C500_WIN_DVD:
+                case C500_WIN_USB1:
+                case C500_WIN_USB2:
+                case C500_WIN_SD:
+                case C500_WIN_BT:
+                case C500_WIN_CMMB:
+                case C500_WIN_AUX:
+                case C500_WIN_AVIN:
+                case C500_WIN_DVD_BOX:
+                case C500_WIN_ATV:
+                    mLastWindow = tmpWindow;
+            }
         }
     }
 
@@ -410,7 +414,7 @@ public class C500Service extends IntentService {
     }
 
     void RestoreState () {
-        if (settings == null) settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         mLastWindow = C500Helper.C500_WINDOW.values()[settings.getInt(PREFS_MODE,0)];
         mLatitude = settings.getFloat(PREFS_LATITUDE,(float)51.685323);
@@ -442,7 +446,7 @@ public class C500Service extends IntentService {
     }
 
     void SaveState () {
-        if (settings == null) settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(PREFS_MODE, mLastWindow.ordinal());
